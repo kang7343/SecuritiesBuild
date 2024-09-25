@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+		crossorigin="anonymous"></script>
+	<title>⚒ Data</title>
+	<style>
+		.container {
+			font-size: 95%;
+		}
+
+		.card {
+			border: none;
+			font-size: 90%;
+		}
+
+		.card-header {
+			background-color: #ffffff;
+			border: none;
+		}
+
+		.clickable-row {
+			cursor: pointer;
+		}
+		
+	</style>
+</head>
+
+<body>
+	<div th:replace="~{/nav.html :: fragment-nav}"></div>
+	<div class="container">
+		<div class="card">
+			<div class="card-header">
+			</div>
+			<div class="card-body">
+				<table class="table table-hover">
+					<thead>
+						<span th:text="${jobDate}"></span>&nbsp;JST (UTC+9)</span>
+						<h4 class="mt-2 mb-3 ms-1">🗺 World Major Indices</h4>
+						<th>Name</th>
+						<th>Symbol</th>
+						<th>Price</th>
+						<th>Change</th>
+						<th>Change %</th>
+						<th>Volume</th>
+						<th>Close</th>
+						<th>Open</th>
+						<th>High</th>
+						<th>Low</th>
+					</thead>
+					<tbody>
+						<tr th:each="indexData : ${currentIndices}">
+							<td th:text="${indexData.name}"></td>
+							<td th:text="${indexData.output1.stck_shrn_iscd}"></td>
+							<td th:text="${indexData.output1.ovrs_nmix_prpr}"></td>
+							<td th:text="${indexData.output1.ovrs_nmix_prdy_vrss}"
+								th:style="${indexData.output1.prdy_vrss_sign < '3' ? 'color:red' : (indexData.output1.prdy_vrss_sign > '3' ? 'color:green' : 'color:black')}">
+							</td>
+							<td th:text="${indexData.output1.prdy_ctrt}"
+								th:style="${indexData.output1.prdy_vrss_sign < '3' ? 'color:red' : (indexData.output1.prdy_vrss_sign > '3' ? 'color:green' : 'color:black')}">
+							</td>
+							<td th:text="${indexData.output1.acml_vol}"></td>
+							<td th:text="${indexData.output1.ovrs_nmix_prdy_clpr}"></td>
+							<td th:text="${indexData.output1.ovrs_prod_oprc}"></td>
+							<td th:text="${indexData.output1.ovrs_prod_hgpr}"></td>
+							<td th:text="${indexData.output1.ovrs_prod_lwpr}"></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<table class="table table-hover">
+					<thead>
+						<h4 class="mt-4 mb-3 ms-1">💸 Top Market Capitalization</h4>
+						<th>Rank</th>
+						<th>Name</th>
+						<th>Symbol</th>
+						<th>Price</th>
+						<th>Change</th>
+						<th>Market Cap</th>
+						<th>Volume</th>
+						<th>Amount</th>
+						<th>Open</th>
+						<th>High</th>
+						<th>Low</th>
+					</thead>
+					<tbody>
+						<th:block th:each="indexData : ${marketCapRank}">
+							<th:block th:each="item : ${indexData.output2}">
+								<tr class="clickable-row" th:data-symbol="${item.symb}">
+									<td th:text="${item.rank}"></td>
+									<td th:text="${item.ename}"></td>
+									<td th:text="${item.symb}" class="symbol-column"></td>
+									<td th:text="${item.last}"></td>
+									<td th:text="${item.rate}"
+										th:style="${item.sign<'3'?'color:red':(item.sign>'3'?'color:green':'color:black')}">
+									</td>
+									<td th:text="${item.valx}"></td>
+									<td th:text="${item.tvol}"></td>
+									<td th:text="${item.avol}"></td>
+									<td th:text="${item.popen}"></td>
+									<td th:text="${item.phigh}"></td>
+									<td th:text="${item.plow}"></td>
+								</tr>
+							</th:block>
+						</th:block>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+
+
+	</div>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			var cells = document.querySelectorAll('.table td:not(.symbol-column)');
+			cells.forEach(function (cell) {
+				var number = parseFloat(cell.textContent.replace(/,/g, ''));
+				if (!isNaN(number)) {
+					cell.textContent = number.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+				}
+			});
+			// Row click redirection
+			var rows = document.querySelectorAll('.clickable-row');
+			rows.forEach(function (row) {
+				row.addEventListener('click', function () {
+					var symbol = row.getAttribute('data-symbol');
+					if (symbol) {
+						window.location.href = '/equities-tse/' + encodeURIComponent(symbol);
+					} else {
+						console.error('No symbol found for this row.');
+					}
+				});
+			});
+		}); 
+	</script>
+</body>
+
+</html>

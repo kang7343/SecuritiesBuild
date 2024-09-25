@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <title>⚒ Bookmarks</title>
+    <style>
+        .inline-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .container {
+            font-size: 90%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .card {
+            border: none;
+        }
+
+        .clickable-row {
+            cursor: pointer;
+        }
+
+        .table {
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        table.table th,
+        table.table td {
+            background-color: #ffffff;
+            height: 40px;
+        }
+
+        .btn-link {
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div th:replace="~{/nav.html :: fragment-nav}"></div>
+    <div class="container mt-5">
+        <div class="card mt-4">
+            <h4 class="ms-2 me-4 mb-3">🏷 Bookmarks</h4>
+            <p class="text-muted mb-4 ms-2" style="font-size: 1rem;">
+                Effortlessly track your favorite stocks at a glance, with instant access to real-time data —
+            </p>
+
+            <div class="input-group mb-4">
+                <input type="text" id="search-input" class="form-control" placeholder="Filter by code, name"
+                    aria-label="Filter by name">
+                <button id="clear-button" class="btn btn-outline-secondary" type="button"
+                    aria-label="Clear filter">Clear</button>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped" id="bookmarks-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Code</th>
+                                <th style="width: 150px;">Name</th>
+                                <th style="width: 150px;"></th>
+                                <th style="width: 100px;">Market</th>
+                                <th style="width: 100px;">Sector</th>
+                                <th style="width: 100px;">Sub Sector</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <th:block th:if="${bookmarks != null}">
+                                <th:block th:each="bookmark : ${bookmarks}">
+                                    <tr class="clickable-row" th:data-symbol="${bookmark.stockCode}">
+                                        <td th:text="${bookmark.stockCode}"></td>
+                                        <td th:text="${bookmark.stockEngName}"></td>
+                                        <td th:text="${bookmark.stockName}"></td>
+                                        <td th:text="${bookmark.stockMarket}"></td>
+                                        <td th:text="${bookmark.stockSector}"></td>
+                                        <td th:text="${bookmark.stockSubSector}"></td>
+                                        <td>
+                                            <form th:action="@{/mypage/remove}" method="post">
+                                                <input type="hidden" name="stockId" th:value="${bookmark.stockId}" />
+                                                <input type="hidden" name="userId" th:value="${user?.id}" />
+                                                <button type="submit" class="btn btn-link position-absolute end-0 me-3"
+                                                    aria-label="Remove Bookmark">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                        fill="#4d4d4d" class="bi bi-trash" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                        <path
+                                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </th:block>
+                            </th:block>
+                            <tr th:if="${#lists.isEmpty(bookmarks)}">
+                                <td colspan="7" class="text-center">Your Bookmark list is empty.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a href="/screener" class="btn btn-secondary" style="font-size: 95%;">Add New Stock</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var rows = document.querySelectorAll('.clickable-row');
+            var searchInput = document.getElementById('search-input');
+            var clearButton = document.getElementById('clear-button');
+
+            searchInput.addEventListener('input', function () {
+                var filter = searchInput.value.toLowerCase();
+                rows.forEach(function (row) {
+                    var stockName = row.children[1].textContent.toLowerCase();
+                    var stockCode = row.children[0].textContent.toLowerCase();
+                    var stockEngName = row.children[1].textContent.toLowerCase();
+                    row.style.display = stockEngName.includes(filter) || stockName.includes(filter) || stockCode.includes(filter) ? '' : 'none';
+                });
+            });
+
+            clearButton.addEventListener('click', function () {
+                searchInput.value = '';
+                rows.forEach(function (row) {
+                    row.style.display = '';
+                });
+            });
+
+            rows.forEach(function (row) {
+                row.addEventListener('click', function () {
+                    var symbol = row.getAttribute('data-symbol');
+                    if (symbol) {
+                        window.location.href = '/equities-tse/' + encodeURIComponent(symbol);
+                    } else {
+                        console.error('No symbol found for this row.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

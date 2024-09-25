@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <title>⚒ Sign Up</title>
+</head>
+
+<body>
+    <div th:replace="~{/nav.html :: fragment-nav}"></div>
+    <div class="container mt-5">
+        <h4 class="text-center mb-4">Sign Up</h4>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                <div th:if="${errorMessage}" class="alert alert-danger text-center">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+                <form th:action="confirm" method="post" th:object="${userForm}" class="row g-3">
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Name *</label>
+                        <input type="text" placeholder="Enter your name" th:field="*{name}" class="form-control" id="inputName" required>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputEmail" class="form-label">Email *</label>
+                        <input type="email" placeholder="Enter your mail address (e.g. example@mail.com)" th:field="*{mailAddress}" class="form-control" id="inputEmail" required>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputUsername" class="form-label">ID *</label>
+                        <input type="text" placeholder="Must be at least five (5) characters" th:field="*{username}" class="form-control" id="inputUsername" required>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputPassword" class="form-label">Password *</label>
+                        <input type="password" placeholder="Must be at least five (5) characters" th:field="*{password}" class="form-control" id="inputPassword" required>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-dark w-100">Sign Up</button>
+                    </div>
+                </form>
+                <p class="mt-2 text-center">Already have an account? <b><a class="login" href="/user/login" style="text-decoration: none; color: rgb(57, 57, 242);">Sign in here</a></b></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -35,7 +35,7 @@
 
 ### Back-End <img src="https://img.shields.io/badge/Made%20for-VSCode-1f425f.svg">
 <div align=left> 
-  <img src="https://img.shields.io/bad・"https://img.shields.io/badge/Spring DATA JPA-1572B6?style=for-the-badge&logo=Spring Boot&logoColor=white">
+  <img src="https://img.shields.io/badge/Spring DATA JPA-1572B6?style=for-the-badge&logo=Spring Boot&logoColor=white">
   <img src="https://img.shields.io/badge/Spring Security-E34F26?style=for-the-badge&logo=Spring Boot&logoColor=white"> 
   <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white"> 
   <br>

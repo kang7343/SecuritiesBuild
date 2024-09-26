@@ -105,77 +105,15 @@ public class KisController {
         return "indices";
     }
 
-    @GetMapping("/info/{id}")
-    public Mono<String> getStockInfo(@PathVariable("id") String id, Model model) {
-        return kisService.getSearchInfo(id)
-                .doOnNext(body -> {
-                    model.addAttribute("info", body.getOutput());
-                    model.addAttribute("jobDate", kisService.getJobDateTime());
-                })
-                .thenReturn("info");
-    }
-
-    @GetMapping("/equities-nas/{id}")
-    public Mono<String> getCurrentPriceNas(@PathVariable("id") String id, Model model) {
-        // getSearchInfoとgetCurrentPriceTseはどちらも非同期処理を返すので、
-        // Monoのzipメソッドを使って2つのMonoを結合する。
-        Mono<Body> searchInfoNasMono = kisService.getSearchInfoNas(id); // 詳細情報
-        Mono<Body> currentPriceNasMono = kisService.getCurrentPriceNas(id); // 現在株価
-        Mono<Body> currentPriceDetailNasMono = kisService.getCurrentPriceDetailNas(id); // 現在株価詳細
-
-        // 日単位
-        List<String> iscdsAndOtherVariable2 = Arrays.asList(id);
-        Flux<IndexData> dailyPriceNasFlux = Flux.fromIterable(iscdsAndOtherVariable2)
-                .concatMap(tuple -> kisService.getDailyPriceNas(id))
-                .map(jsonData -> {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    try {
-                        return objectMapper.readValue(jsonData, IndexData.class);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-        List<IndexData> dailyPriceList = dailyPriceNasFlux.collectList().block();
-
-        // 分単位
-        List<String> iscdsAndOtherVariable3 = Arrays.asList(id);
-        Flux<IndexData> minutePriceNasFlux = Flux.fromIterable(iscdsAndOtherVariable3)
-                .concatMap(tuple -> kisService.getMinutePriceNas(id))
-                .map(jsonData -> {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    try {
-                        return objectMapper.readValue(jsonData, IndexData.class);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
-        List<IndexData> minutePriceList = minutePriceNasFlux.collectList().block();
-
-        return Mono.zip(searchInfoNasMono, currentPriceNasMono,
-                currentPriceDetailNasMono)
-                .doOnNext(tuple -> {
-                    // タプルで返された2つのBodyオブジェクトをモデルに追加する。
-                    model.addAttribute("info", tuple.getT1().getOutput());
-                    model.addAttribute("equity", tuple.getT2().getOutput());
-                    model.addAttribute("detail", tuple.getT3().getOutput());
-                    model.addAttribute("jobDate", kisService.getJobDateTime());
-                    model.addAttribute("daily", dailyPriceList);
-                    model.addAttribute("minute", minutePriceList);
-                })
-                .thenReturn("equities-nas");
-    }
-
     @GetMapping("/equities-tse/{id}")
     public Mono<String> getCurrentPrice(@PathVariable("id") String id, Model model) {
-        // getSearchInfoとgetCurrentPriceTseはどちらも非同期処理を返すので、
-        // Monoのzipメソッドを使って2つのMonoを結合する。
+        // 非同期API呼び出しの結果をMono（0-1つの値を処理。output1のみ使うので）でラッピング
         Mono<Body> searchInfoMono = kisService.getSearchInfo(id); // 詳細情報
         Mono<Body> currentPriceTseMono = kisService.getCurrentPriceTse(id); // 現在株価
         Mono<Body> currentPriceDetailMono = kisService.getCurrentPriceDetail(id); // 現在株価詳細
 
         // 日単位
+        // Flux()
         List<String> iscdsAndOtherVariable2 = Arrays.asList(id);
         Flux<IndexData> dailyPriceFlux = Flux.fromIterable(iscdsAndOtherVariable2)
                 .concatMap(tuple -> kisService.getDailyPrice(id))
@@ -183,12 +121,14 @@ public class KisController {
                     ObjectMapper objectMapper = new ObjectMapper();
                     try {
                         return objectMapper.readValue(jsonData, IndexData.class);
+                        // jsonデータをIndexData型に変換
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
                 });
 
         List<IndexData> dailyPriceList = dailyPriceFlux.collectList().block();
+        // dailyPriceFluxで得られた結果をリスト変換。blockでブロッキング
 
         // 分単位
         List<String> iscdsAndOtherVariable3 = Arrays.asList(id);
@@ -205,9 +145,10 @@ public class KisController {
 
         List<IndexData> minutePriceList = minutePriceFlux.collectList().block();
 
+        // Mono.zipメソッドを使って複数のMonoを結合
         return Mono.zip(searchInfoMono, currentPriceTseMono, currentPriceDetailMono)
                 .doOnNext(tuple -> {
-                    // タプルで返された2つのBodyオブジェクトをモデルに追加する。
+                    // 複数のそれぞれ異なるレスポンスが含まれているBodyオブジェクトをタプルを用いてモデルに追加。
                     model.addAttribute("info", tuple.getT1().getOutput());
                     model.addAttribute("equity", tuple.getT2().getOutput());
                     model.addAttribute("detail", tuple.getT3().getOutput());
@@ -217,19 +158,82 @@ public class KisController {
                 })
                 .thenReturn("equities-tse");
     }
-
-    // @GetMapping("/equities/{id}")
-    // public Mono<String> getCurrentPrice(@PathVariable("id") String id, Model
-    // model) {
-    // return kisService.getCurrentPrice(id)
-    // .doOnNext(body -> {
-    // model.addAttribute("equity", body.getOutput());
-    // model.addAttribute("jobDate", kisService.getJobDateTime());
-    // })
-    // .thenReturn("equities")
-    // .onErrorResume(error -> {
-    // System.out.println("*** error: " + error);
-    // return Mono.just("error");
-    // });
-    // }
 }
+
+// @GetMapping("/info/{id}")
+// public Mono<String> getStockInfo(@PathVariable("id") String id, Model model)
+// {
+// return kisService.getSearchInfo(id)
+// .doOnNext(body -> {
+// model.addAttribute("info", body.getOutput());
+// model.addAttribute("jobDate", kisService.getJobDateTime());
+// })
+// .thenReturn("info");
+// }
+
+// @GetMapping("/equities-nas/{id}")
+// public Mono<String> getCurrentPriceNas(@PathVariable("id") String id, Model
+// model) {
+
+// Mono<Body> searchInfoNasMono = kisService.getSearchInfoNas(id);
+// Mono<Body> currentPriceNasMono = kisService.getCurrentPriceNas(id);
+// Mono<Body> currentPriceDetailNasMono =
+// kisService.getCurrentPriceDetailNas(id);
+
+// List<String> iscdsAndOtherVariable2 = Arrays.asList(id);
+// Flux<IndexData> dailyPriceNasFlux = Flux.fromIterable(iscdsAndOtherVariable2)
+// .concatMap(tuple -> kisService.getDailyPriceNas(id))
+// .map(jsonData -> {
+// ObjectMapper objectMapper = new ObjectMapper();
+// try {
+// return objectMapper.readValue(jsonData, IndexData.class);
+// } catch (JsonProcessingException e) {
+// throw new RuntimeException(e);
+// }
+// });
+
+// List<IndexData> dailyPriceList = dailyPriceNasFlux.collectList().block();
+
+// List<String> iscdsAndOtherVariable3 = Arrays.asList(id);
+// Flux<IndexData> minutePriceNasFlux =
+// Flux.fromIterable(iscdsAndOtherVariable3)
+// .concatMap(tuple -> kisService.getMinutePriceNas(id))
+// .map(jsonData -> {
+// ObjectMapper objectMapper = new ObjectMapper();
+// try {
+// return objectMapper.readValue(jsonData, IndexData.class);
+// } catch (JsonProcessingException e) {
+// throw new RuntimeException(e);
+// }
+// });
+
+// List<IndexData> minutePriceList = minutePriceNasFlux.collectList().block();
+
+// return Mono.zip(searchInfoNasMono, currentPriceNasMono,
+// currentPriceDetailNasMono)
+// .doOnNext(tuple -> {
+
+// model.addAttribute("info", tuple.getT1().getOutput());
+// model.addAttribute("equity", tuple.getT2().getOutput());
+// model.addAttribute("detail", tuple.getT3().getOutput());
+// model.addAttribute("jobDate", kisService.getJobDateTime());
+// model.addAttribute("daily", dailyPriceList);
+// model.addAttribute("minute", minutePriceList);
+// })
+// .thenReturn("equities-nas");
+// }
+
+// @GetMapping("/equities/{id}")
+// public Mono<String> getCurrentPrice(@PathVariable("id") String id, Model
+// model) {
+// return kisService.getCurrentPrice(id)
+// .doOnNext(body -> {
+// model.addAttribute("equity", body.getOutput());
+// model.addAttribute("jobDate", kisService.getJobDateTime());
+// })
+// .thenReturn("equities")
+// .onErrorResume(error -> {
+// System.out.println("*** error: " + error);
+// return Mono.just("error");
+// });
+// }

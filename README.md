@@ -71,6 +71,35 @@
 <br />
 
 ## データの収集
+#### J-Quants API
+- https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info
+- 2024.06.18 時点で上場している銘柄の一覧をPostmanを利用してjsonファイルで取得
+  
+![image](https://github.com/user-attachments/assets/cc0c1a02-a358-4267-af90-5679ab631c32)
+
+#### データの格納
+- 取得したjsonファイルからnode.jsとsequelizeを利用して必要なデータのみを抽出し、ローカルDB(stock)に保存
+- modelの呼び出し ➡ processedDataの読み込み ➡ dataをjsonオブジェクトに変換 ➡ DBに銘柄一覧をinsert
+  
+```
+util
+ ├─ .env // 環境変数設定。今回はPostgresのPW情報を格納
+ ├─ config.js
+ │   // DB接続の設定を管理するためのオブジェクトを作成。modelを定義するためにsequelizeインスタンスを生成
+ │　 // DBのテーブルとマッピングするmodelを定義できる
+ ├─ dataProcessor.js // rawDataを加工して格納したいカラム-値のみを抽出してjsonファイルを作成
+ ├─ index.js // .envを読み込むためのdotenvパッケージが入っている
+ ├─ insertData.js // テーブルにデータを挿入するためのロジック
+ ├─ model.js // カラムのタイプなどテーブルの構造を定義。queryを実行し、データを操作できる。
+ ├─ processedData.json // dataProcessorを実行した結果のデータ
+ └─ rawData.json // Postmanで取得した初期データ。加工の対象
+```
+![image](https://github.com/user-attachments/assets/ba42a1f0-311c-4649-8d51-c4b4241232b4)
+![image](https://github.com/user-attachments/assets/8ad4eef5-fc8b-4536-b7e9-11781e75fe01)
+
+
+#### KIS Developers（韓国投資証券）Open API
+- https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_3eeac674-072d-4674-a5a7-f0ed01194a81
 
 ## プロジェクト設計
 

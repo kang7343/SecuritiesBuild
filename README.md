@@ -71,13 +71,13 @@
 <br />
 
 ## データの収集
-#### J-Quants API
+### J-Quants API
 - https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info
 - 2024.06.18 時点で上場している銘柄の一覧をPostmanを利用してjsonファイルで取得
   
 ![image](https://github.com/user-attachments/assets/cc0c1a02-a358-4267-af90-5679ab631c32)
 
-#### データの格納
+### データの格納
 - 取得したjsonファイルからnode.jsとsequelizeを利用して必要なデータのみを抽出し、ローカルDB(stock)に保存
 - modelの呼び出し ➡ processedDataの読み込み ➡ dataをjsonオブジェクトに変換 ➡ DBに銘柄一覧をinsert
   
@@ -88,19 +88,122 @@ util
  │   // DB接続の設定を管理するためのオブジェクトを作成。modelを定義するためにsequelizeインスタンスを生成
  │　 // DBのテーブルとマッピングするmodelを定義できる
  ├─ dataProcessor.js // rawDataを加工して格納したいカラム-値のみを抽出してjsonファイルを作成
- ├─ index.js // .envを読み込むためのdotenvパッケージが入っている
+ ├─ index.js // .envを読み込むためのdotenvパッケージを入れている
  ├─ insertData.js // テーブルにデータを挿入するためのロジック
- ├─ model.js // カラムのタイプなどテーブルの構造を定義。queryを実行し、データを操作できる。
+ ├─ model.js // カラムのタイプなどテーブルの構造を定義。queryを実行し、データを操作できる
  ├─ processedData.json // dataProcessorを実行した結果のデータ
- └─ rawData.json // Postmanで取得した初期データ。加工の対象
+ └─ rawData.json // Postmanで取得したJ-Quantsの初期データ。加工の対象
 ```
+
+model.js
+
+![image](https://github.com/user-attachments/assets/7e72e194-6673-4a1d-b638-2d08df2ac132)
+
+insertData.js
+
+![image](https://github.com/user-attachments/assets/d75b577d-3df6-42a2-b35e-e9c62a42e269)
+
+- powershellで実行してクエリが正常終了すると、console()のメッセージが表示される。
+- テーブルが存在しない場合、新規作成されるようにsequelize.sync({ force:false })メソッドを使用
+  
+  - { force:false }：テーブルが存在する場合、新規作成しない
+  - { force:true }：既存のテーブルを削除し、新規作成
+
+テーブルが存在しない場合に実行
+
+![image](https://github.com/user-attachments/assets/7f3f03aa-e516-4ef8-80e4-d9cac3419b9c)
+
+テーブルが存在する場合に実行
+
 ![image](https://github.com/user-attachments/assets/ba42a1f0-311c-4649-8d51-c4b4241232b4)
-![image](https://github.com/user-attachments/assets/8ad4eef5-fc8b-4536-b7e9-11781e75fe01)
+
+正常終了。selectで格納できたことを確認
+
+![image](https://github.com/user-attachments/assets/d97a9510-46bf-4606-853c-ca3242014ed0)
 
 
-#### KIS Developers（韓国投資証券）Open API
+### KIS Developers（韓国投資証券）Open API
 - https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_3eeac674-072d-4674-a5a7-f0ed01194a81
+- REST方式を採用している韓国の金融機関の外国株式データ照会APIを利用。Spring WebfluxのWebClientインタフェースを通じて非同期でHTTPコンテンツを取得するロジックを実装した
+- パラメータとして4桁の銘柄コードが求められるが、J-Quantsから取得したデータは予備コード「0」を含めた５桁だったので、SQLのRTRIM関数で4桁に変換してから利用した
+- ex. 銘柄詳細情報照会機能のコントローラ
+  
+```java
+@GetMapping("/equities-tse/{id}")
+    public Mono<String> getCurrentPrice(@PathVariable("id") String id, Model model) {
+        // getSearchInfoとgetCurrentPriceTseはどちらも非同期処理を返すので、Monoのzipメソッドを使って2つのMonoを結合
+        Mono<Body> searchInfoMono = kisService.getSearchInfo(id); // 詳細情報
+        Mono<Body> currentPriceTseMono = kisService.getCurrentPriceTse(id); // 現在株価
+        Mono<Body> currentPriceDetailMono = kisService.getCurrentPriceDetail(id); // 現在株価詳細
 
+        // 日単位
+        List<String> iscdsAndOtherVariable2 = Arrays.asList(id);
+        Flux<IndexData> dailyPriceFlux = Flux.fromIterable(iscdsAndOtherVariable2)
+                .concatMap(tuple -> kisService.getDailyPrice(id))
+                .map(jsonData -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    try {
+                        return objectMapper.readValue(jsonData, IndexData.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        List<IndexData> dailyPriceList = dailyPriceFlux.collectList().block();
+
+        // 分単位
+        List<String> iscdsAndOtherVariable3 = Arrays.asList(id);
+        Flux<IndexData> minutePriceFlux = Flux.fromIterable(iscdsAndOtherVariable3)
+                .concatMap(tuple -> kisService.getMinutePrice(id))
+                .map(jsonData -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    try {
+                        return objectMapper.readValue(jsonData, IndexData.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        List<IndexData> minutePriceList = minutePriceFlux.collectList().block();
+
+        return Mono.zip(searchInfoMono, currentPriceTseMono, currentPriceDetailMono)
+                .doOnNext(tuple -> {
+                    // タプルで返された2つのBodyオブジェクトをモデルに追加
+                    model.addAttribute("info", tuple.getT1().getOutput());
+                    model.addAttribute("equity", tuple.getT2().getOutput());
+                    model.addAttribute("detail", tuple.getT3().getOutput());
+                    model.addAttribute("jobDate", kisService.getJobDateTime());
+                    model.addAttribute("daily", dailyPriceList);
+                    model.addAttribute("minute", minutePriceList);
+                })
+                .thenReturn("equities-tse");
+    }
+```
+- ex. thymeleaf + javascriptで銘柄一覧のテーブルの銘柄コードをAPIのパラメータとして渡し、データを呼び出せるようにした
+  
+```java
+<th:block th:each="stock : ${stocks}">
+  <tr class="clickable-row" th:data-symbol="${stock.code}">
+
+... // 銘柄一覧のテーブル
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var rows = document.querySelectorAll('.clickable-row');
+      rows.forEach(function (row) {
+        row.addEventListener('click', function () {
+          var symbol = row.getAttribute('data-symbol');
+            if (symbol) {
+              window.location.href = '/equities-tse/' + encodeURIComponent(symbol);
+                } else {
+                  console.error('No symbol found for this row.');
+                }
+              });
+            });
+         });
+</script>
+```
+  
 ## プロジェクト設計
 
 <details>
@@ -205,19 +308,6 @@ src
 <details>
 <summary>ワイヤーフレーム</summary>
 <br />
-
->Main 
-
->Data  
-
->Vocabulary  
-
->Screener
-
->Bookmarks
-
->Details
-
 
 </details>
 

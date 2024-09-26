@@ -1,7 +1,7 @@
 # 自律研修プロジェクト *Securities.Build();* 📈
 
 ## 📆 作業期間
-2024.09.02 ~ 2023.09.27 (3週間)
+2024.09.02 ~ 2024.09.27 (3週間)
 
 ## 💡 プロジェクトの背景
 - 自分のような未経験者が、株式の知識に気軽に接するアプリケーションを作りたかった
@@ -215,7 +215,7 @@ src
 
 </details>
 
-### ✔️ Git Conventional Commit Messages
+## ✔️ Git Conventional Commit Messages
 - `feat` 機能の追加
 - `fix` バグの修正
 - `docs` ドキュメントの変更

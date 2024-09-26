@@ -4,8 +4,8 @@
 2024.09.02 ~ 2023.09.27 (3週間)
 
 ## 💡 プロジェクトの背景
-- 
-- 
+- 自分のような未経験者が、株式の知識に気軽に接するアプリケーションを作りたかった
+- 普段は触れない金融英語の基礎を学ぶきっかけを得たかった
 
 ## 🚩 システムのターゲット
 - 株式投資・情報の見方を知りたい初心者
@@ -13,7 +13,7 @@
 - 国内株式の情報を収集したい外国人
 
 ## 🌟 システムの特徴
-- オープンAPIを用いた最新データとの連携
+- 金融機関のオープンAPIを用いた最新データとの連携
 - 証券SEという職務の特殊性を反映したUIデザイン
 
 ## 💻 機能一覧
@@ -61,7 +61,7 @@ src
  └─ main
      ├─ java
      │   └─ com
-     │       └─ securitiesbuild
+     │       └─ sb
      │           ├─ controller
      │           │   ├─ BookmarkController.java
      │           │   ├─ GlobalControllerAdvice.java
@@ -120,7 +120,7 @@ src
      │           └─ Application.java
      └─ resources
          ├─ com
-         │   └─ securitiesbuild
+         │   └─ sb
          │       └─ repository
          │           ├─ MarketRepository.xml
          │           ├─ SectorRepository.xml
@@ -153,19 +153,28 @@ src
 
 <details>
 <summary>ワイヤーフレーム</summary>
+<br />
 
-#### 1️⃣ Main 
-#### 2⃣ Data 
-#### 3⃣ Vocabulary  
-#### 4⃣ Screener
-#### 5⃣ Bookmarks
-#### 6⃣ Details
+>Main 
+
+>Data  
+
+>Vocabulary  
+
+>Screener
+
+>Bookmarks
+
+>Details
 
 
 </details>
 
 <details>
 <summary>ERD</summary>
+
+ ![ERD](https://github.com/user-attachments/assets/78d5d99c-e737-4011-8170-0329675b9a54)
+
 </details>
 
 <details>
@@ -175,6 +184,20 @@ src
 ## 🔎 画面遷移
 <details>
 <summary>URL一覧</summary>
+
+画面名|コントローラー|メソッド|ビュー
+---|---|---|---
+[メイン（銘柄ランキング一覧）画面](http://localhost:8080/main)|MainController|menu|login/menu.html
+[ログイン画面](http://localhost:8080/user/login)|LoginController|login|user/login.html
+[ユーザーアカウント登録（入力）画面](http://localhost:8080/user/account/register)|UserController|register|user/register.html
+[ユーザーアカウント登録（確認）画面](http://localhost:8080/admin/account/confirm)|UserController|confirm|user/confirm.html
+[ユーザーアカウント登録（完了）画面](http://localhost:8080/admin/account/complete)|UserController|complete|user/complete.html
+[主要指数一覧画面](http://localhost:8080/indicies)|KisController|majorIndicies|indicies.html
+[銘柄詳細情報画面](http://localhost:8080//equities-tse/{id})|KisController|getCurrentPrice|equities-tse.html
+[英単語学習画面](http://localhost:8080/voca)|VocabularyController|getVocabularies|vocabulary.html
+[銘柄スクリーナー画面](http://localhost:8080/screener)|ScreenerController|stockScreener|screener.html
+[ブックマーク一覧画面](http://localhost:8080/mypage)|BookmarkController|getBookmarks|bookmarks.html
+[エラー画面](http://localhost:8080/error)|ErrorController|error|error.html
 </details>
 
 <details>
@@ -191,3 +214,13 @@ src
 8. 銘柄詳細照会
 
 </details>
+
+### ✔️ Git Conventional Commit Messages
+- `feat` 機能の追加
+- `fix` バグの修正
+- `docs` ドキュメントの変更
+- `style` コードのフォーマット変更（空白、セミコロンなど）
+- `refactor` コードのリファクタリング
+- `perf` パフォーマンスの改善
+- `test` テストの追加 or 修正
+- `chore` その他の些細な変更

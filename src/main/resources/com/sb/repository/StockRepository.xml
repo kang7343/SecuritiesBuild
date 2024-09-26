@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sb.repository.StockRepository">
+	 <select id="selectAll" resultType="com.sb.entity.Stock">
+        SELECT * FROM stock_info
+        ORDER BY id
+        <!-- LIMIT #{limit} OFFSET #{offset} -->
+    </select>
+    <select id="selectCodeById" resultType="com.sb.entity.Stock">
+		select code from stock_info where id = #{stockId} order by name
+	</select>
+	<select id="selectCode" resultType="com.sb.entity.Stock">
+		select code from stock_info
+	</select>
+	<select id="selectByCode" resultType="com.sb.entity.Stock">
+		select * from stock_info where code = #{code}
+	</select>
+	<select id="selectLikeCode" resultType="com.sb.entity.Stock" parameterType="String">
+		select code, name, eng_name from stock_info where code like concat(#{code}, '%')
+	</select>
+	<select id="selectByName" resultType="com.sb.entity.Stock" parameterType="String">
+		select code, name, eng_name from stock_info where name like concat('%', #{search}, '%')
+	</select>
+	<select id="countAll" resultType="Integer">
+		select count(*) from stock_info
+	</select>
+	<select id="selectByMarketCode" resultType="com.sb.entity.Stock">
+		select * from stock_info where market_code = #{marketCode}
+	</select>
+	<select id="selectBySubSectorCode" resultType="com.sb.entity.Stock">
+		select * from stock_info where sub_sector_code = #{subSectorCode}
+	</select>
+	<select id="selectByMarketCodeAndSubSectorCode" resultType="com.sb.entity.Stock">
+		SELECT * FROM stock_info 
+		WHERE market_code = #{marketCode} 
+		AND sub_sector_code = #{subSectorCode}
+	</select>
+	<select id="countByMarket" resultType="Integer">
+   		SELECT COUNT(*) FROM stock_info WHERE market_code = #{marketCode}
+	</select>
+	 <select id="countBySubSectorCode" resultType="Integer">
+        SELECT COUNT(*) FROM stock_info where sub_sector_code = #{subSectorCode}
+    </select>
+	<select id="countByMarketCodeAndSubSectorCode" resultType="Integer">
+		SELECT COUNT(*) FROM stock_info 
+		WHERE market_code = #{marketCode} 
+		AND sub_sector_code = #{subSectorCode}
+	</select>
+
+	<select id="searchStocks" resultType="com.sb.entity.Stock" parameterType="com.sb.entity.StockSearchCriteria">
+		SELECT * FROM stock_info
+		WHERE 1=1
+		<if test="marketCode != null and marketCode != ''">
+			AND market_code = #{marketCode}
+		</if>
+		<if test="subSectorCode != null and subSectorCode != ''">
+			AND sub_sector_code = #{subSectorCode}
+		</if>
+		<if test="name != null and name != ''">
+			AND name LIKE CONCAT('%', #{name}, '%')
+		</if>
+		ORDER BY id
+	</select>
+	
+
+</mapper> 

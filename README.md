@@ -131,12 +131,13 @@ insertData.js
 ```java
 @GetMapping("/equities-tse/{id}")
     public Mono<String> getCurrentPrice(@PathVariable("id") String id, Model model) {
-        // getSearchInfoとgetCurrentPriceTseはどちらも非同期処理を返すので、Monoのzipメソッドを使って2つのMonoを結合
+        // 非同期API呼び出しの結果をMono（0-1つの値を処理。output1のみ使うので）でラッピング
         Mono<Body> searchInfoMono = kisService.getSearchInfo(id); // 詳細情報
         Mono<Body> currentPriceTseMono = kisService.getCurrentPriceTse(id); // 現在株価
         Mono<Body> currentPriceDetailMono = kisService.getCurrentPriceDetail(id); // 現在株価詳細
 
         // 日単位
+        // Flux()
         List<String> iscdsAndOtherVariable2 = Arrays.asList(id);
         Flux<IndexData> dailyPriceFlux = Flux.fromIterable(iscdsAndOtherVariable2)
                 .concatMap(tuple -> kisService.getDailyPrice(id))
@@ -144,12 +145,14 @@ insertData.js
                     ObjectMapper objectMapper = new ObjectMapper();
                     try {
                         return objectMapper.readValue(jsonData, IndexData.class);
+                        // jsonデータをIndexData型に変換
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
                 });
 
         List<IndexData> dailyPriceList = dailyPriceFlux.collectList().block();
+        // dailyPriceFluxで得られた結果をリスト変換。blockでブロッキング
 
         // 分単位
         List<String> iscdsAndOtherVariable3 = Arrays.asList(id);
@@ -166,9 +169,10 @@ insertData.js
 
         List<IndexData> minutePriceList = minutePriceFlux.collectList().block();
 
+        // Mono.zipメソッドを使って複数のMonoを結合
         return Mono.zip(searchInfoMono, currentPriceTseMono, currentPriceDetailMono)
                 .doOnNext(tuple -> {
-                    // タプルで返された2つのBodyオブジェクトをモデルに追加
+                    // 複数のそれぞれ異なるレスポンスが含まれているBodyオブジェクトをタプルを用いてモデルに追加
                     model.addAttribute("info", tuple.getT1().getOutput());
                     model.addAttribute("equity", tuple.getT2().getOutput());
                     model.addAttribute("detail", tuple.getT3().getOutput());
@@ -321,7 +325,7 @@ src
 <details>
 <summary>アーキテクチャ</summary>
 
-![UseCase](https://github.com/user-attachments/assets/85d4789e-e790-4aed-82d3-1d0c45256c99)
+![UseCase](https://github.com/user-attachments/assets/e32c099b-5129-421b-940a-0e53e3cea1e8)
 
 </details>
 

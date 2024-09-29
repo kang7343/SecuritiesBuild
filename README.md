@@ -1,12 +1,14 @@
 # 📈 株式情報取得システム *Securities.Build();* 
 
 ## 目次
-- [概要](#概要)
-- [データの収集](#データの収集)
-- [プロジェクト設計](#プロジェクト設計)
-- [システム詳細](#システム詳細)
+- [1. 概要](#1-概要)  
+- [2. データの収集](#2-データの収集)
+  - [J-Quants API](#j-quants-api)
+  - [KIS Developers Open API](#kis-developers-open-api)
+- [3. プロジェクト設計](#3-プロジェクト設計)
+- [4. システム詳細](#4-システム詳細)
   
-## 概要 
+## 1. 概要 
 
 ### 作業期間
 - 2024.09.02 ~ 2024.09.27
@@ -70,7 +72,7 @@
 - `chore` その他の些細な変更
 <br />
 
-## データの収集
+## 2. データの収集
 ### J-Quants API
 - https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info
 - 2024.06.18 時点で上場している銘柄の一覧をPostmanを利用してjsonファイルで取得
@@ -122,9 +124,9 @@ util
 ![image](https://github.com/user-attachments/assets/d97a9510-46bf-4606-853c-ca3242014ed0)
 
 
-### KIS Developers（韓国投資証券）Open API
+### KIS Developers Open API
 - https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_3eeac674-072d-4674-a5a7-f0ed01194a81
-- REST方式を採用している韓国の金融機関の外国株式データ照会APIを利用。Spring WebfluxのWebClientインタフェースを通じて非同期でHTTPコンテンツを取得するロジックを実装した
+- REST方式を採用しているKIS（Korea Investment & Securities = 韓国投資証券。韓国の金融機関）の外国株式データ照会APIを利用。Spring WebfluxのWebClientインタフェースを通じて非同期でHTTPコンテンツを取得するロジックを実装した
 - パラメータとして4桁の銘柄コードが求められるが、J-Quantsから取得したデータは予備コード「0」を含めた５桁だったので、SQLのRTRIM関数で4桁に変換してから利用した
 - ex. 銘柄詳細情報照会機能のコントローラ
   
@@ -208,7 +210,7 @@ util
 </script>
 ```
   
-## プロジェクト設計
+## 3. プロジェクト設計
 
 <details>
 <summary>フォルダ構成</summary>
@@ -332,7 +334,7 @@ src
 </details>
 
 
-## システム詳細
+## 4. システム詳細
 
 <details>
 <summary>URL一覧</summary>

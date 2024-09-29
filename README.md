@@ -77,7 +77,7 @@
 - https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info
 - 2024.06.18 時点で上場している銘柄の一覧をPostmanを利用してjsonファイルで取得
   
-![image](https://github.com/user-attachments/assets/cc0c1a02-a358-4267-af90-5679ab631c32)
+![image](image/ex1.png)
 
 ### データの格納
 - 取得したjsonファイルからnode.jsとsequelizeを利用して必要なデータのみを抽出し、ローカルDB(stock)に保存
@@ -99,11 +99,11 @@ util
 
 > model.js
 
-![image](https://github.com/user-attachments/assets/7e72e194-6673-4a1d-b638-2d08df2ac132)
+![image](image/ex2.png)
 
 > insertData.js
 
-![image](https://github.com/user-attachments/assets/d75b577d-3df6-42a2-b35e-e9c62a42e269)
+![image](image/ex3.png)
 
 - powershellで実行してクエリが正常終了すると、console()のメッセージが表示される
 - テーブルが存在しない場合、新規作成されるようにsequelize.sync({ force:false })メソッドを使用
@@ -113,15 +113,15 @@ util
 
 > テーブルが存在しない場合に実行
 
-![image](https://github.com/user-attachments/assets/7f3f03aa-e516-4ef8-80e4-d9cac3419b9c)
+![image](image/ex4.png)
 
 > テーブルが存在する場合に実行
 
-![image](https://github.com/user-attachments/assets/ba42a1f0-311c-4649-8d51-c4b4241232b4)
+![image](image/ex5.png)
 
 > 正常終了。selectで格納できたことを確認
 
-![image](https://github.com/user-attachments/assets/d97a9510-46bf-4606-853c-ca3242014ed0)
+![image](image/ex6.png)
 
 
 ### KIS Developers Open API
@@ -315,21 +315,21 @@ src
 <details>
 <summary>ワイヤーフレーム</summary>
   
-![image](https://github.com/user-attachments/assets/e200b19c-0059-44e5-924b-1216dd283ef8)
+![image](image/wireframe.jpg)
 
 </details>
 
 <details>
 <summary>ERD</summary>
 
-![ERD](https://github.com/user-attachments/assets/78d5d99c-e737-4011-8170-0329675b9a54)
+![ERD](image/ERD.png)
 
 </details>
 
 <details>
 <summary>ユースケース図</summary>
 
-![UseCase](https://github.com/user-attachments/assets/e32c099b-5129-421b-940a-0e53e3cea1e8)
+![UseCase](image/usecase.png)
 
 </details>
 
@@ -362,44 +362,44 @@ src
 
 **0. インデックス**
 
-![image](https://github.com/user-attachments/assets/90b78f29-d4ba-4772-b10a-0cd9babbd3d4)
+![image](image/index.gif)
 
 **1. 銘柄詳細照会**
 
-![image](https://github.com/user-attachments/assets/2b41261c-539f-4151-941f-86386ed62372)
+![image](image/equities.gif)
 
 **2. ログイン**
 
-![image](https://github.com/user-attachments/assets/7a58be47-11ed-4bdb-a6b1-5e57c97ad22d)
+![image](image/signin.gif)
    
 **3. アカウント登録**
 
-![image](https://github.com/user-attachments/assets/48f1097d-de6b-4f08-b3e0-f6a71e0568a3)
+![image](image/signup.gif)
 
 **4. 株式ランキング一覧**
   - ゲストモード：売買高順のみ閲覧可能
     
-![image](https://github.com/user-attachments/assets/e045ca28-c2ba-4dd5-9d07-14ac4206d669)
+![image](image/main-beforelogin.gif)
 
   - ログイン後：売買代金、現在株価、値上がり順も閲覧可能
     
-![image](https://github.com/user-attachments/assets/391ab652-8e85-4b3e-b3f1-d5687cde0eb1)
+![image](image/main-afterlogin.gif)
 
  
 **5. 主要指数照会**
 
-![image](https://github.com/user-attachments/assets/7b6e8509-f5da-46a9-8548-47c7fa75d5a0)
+![image](image/indicies.gif)
    
 **6. 金融英単語学習**
 
-![image](https://github.com/user-attachments/assets/22d94a80-bf37-45ec-a56c-54207950a0df)
+![image](image/voca.gif)
     
 **7. 銘柄スクリーニング**
 
-![image](https://github.com/user-attachments/assets/8607d3dc-a4f1-4616-8530-1dd628355bb5)
+![image](image/screener.gif)
     
 **8. ブックマーク**
 
-![image](https://github.com/user-attachments/assets/e2a2ca2b-e389-4afd-850d-7986bf76e01e)
+![image](image/bookmarks.gif)
 
 </details>

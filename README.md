@@ -126,7 +126,8 @@ util
 
 ### KIS Developers Open API
 - https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_3eeac674-072d-4674-a5a7-f0ed01194a81
-- REST方式を採用しているKIS（Korea Investment & Securities = 韓国投資証券。韓国の金融機関）の外国株式データ照会APIを利用。Spring WebfluxのWebClientインタフェースを通じて非同期でHTTPコンテンツを取得するロジックを実装した
+- REST方式を採用しているKIS（Korea Investment & Securities = 韓国投資証券。韓国の金融機関）の外国株式データ照会APIを利用
+- Spring WebfluxのWebClientインタフェースを通じて非同期でHTTPコンテンツを取得するロジックを実装した
 - パラメータとして4桁の銘柄コードが求められるが、J-Quantsから取得したデータは予備コード「0」を含めた５桁だったので、SQLのRTRIM関数で4桁に変換してから利用した
 - ex. 銘柄詳細情報照会機能のコントローラ
   

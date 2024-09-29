@@ -385,7 +385,7 @@ src
     
 ![image](image/main-afterlogin.gif)
 
- 
+
 **5. 主要指数照会**
 
 ![image](image/indicies.gif)

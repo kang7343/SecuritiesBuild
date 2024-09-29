@@ -77,7 +77,7 @@
 - https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info
 - 2024.06.18 時点で上場している銘柄の一覧をPostmanを利用してjsonファイルで取得
   
-![image](https://github.com/user-attachments/assets/cc0c1a02-a358-4267-af90-5679ab631c32)
+![image](https://github.com/user-attachments/assets/cc0c1a02-a358-4267-af90-5679ab631c32?raw-true)
 
 ### データの格納
 - 取得したjsonファイルからnode.jsとsequelizeを利用して必要なデータのみを抽出し、ローカルDB(stock)に保存
@@ -99,11 +99,11 @@ util
 
 > model.js
 
-![image](https://github.com/user-attachments/assets/7e72e194-6673-4a1d-b638-2d08df2ac132)
+![image](https://github.com/user-attachments/assets/7e72e194-6673-4a1d-b638-2d08df2ac132?raw-true)
 
 > insertData.js
 
-![image](https://github.com/user-attachments/assets/d75b577d-3df6-42a2-b35e-e9c62a42e269)
+![image](https://github.com/user-attachments/assets/d75b577d-3df6-42a2-b35e-e9c62a42e269?raw-true)
 
 - powershellで実行してクエリが正常終了すると、console()のメッセージが表示される
 - テーブルが存在しない場合、新規作成されるようにsequelize.sync({ force:false })メソッドを使用
@@ -113,15 +113,15 @@ util
 
 > テーブルが存在しない場合に実行
 
-![image](https://github.com/user-attachments/assets/7f3f03aa-e516-4ef8-80e4-d9cac3419b9c)
+![image](https://github.com/user-attachments/assets/7f3f03aa-e516-4ef8-80e4-d9cac3419b9c?raw-true)
 
 > テーブルが存在する場合に実行
 
-![image](https://github.com/user-attachments/assets/ba42a1f0-311c-4649-8d51-c4b4241232b4)
+![image](https://github.com/user-attachments/assets/ba42a1f0-311c-4649-8d51-c4b4241232b4?raw-true)
 
 > 正常終了。selectで格納できたことを確認
 
-![image](https://github.com/user-attachments/assets/d97a9510-46bf-4606-853c-ca3242014ed0)
+![image](https://github.com/user-attachments/assets/d97a9510-46bf-4606-853c-ca3242014ed0?raw-true)
 
 
 ### KIS Developers Open API

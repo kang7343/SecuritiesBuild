@@ -148,7 +148,7 @@ public class KisController {
         // Mono.zipメソッドを使って複数のMonoを結合
         return Mono.zip(searchInfoMono, currentPriceTseMono, currentPriceDetailMono)
                 .doOnNext(tuple -> {
-                    // 複数のそれぞれ異なるレスポンスが含まれているBodyオブジェクトをタプルを用いてモデルに追加。
+                    // 複数のそれぞれ異なるレスポンスが含まれているBodyオブジェクトをタプルを用いてモデルに追加
                     model.addAttribute("info", tuple.getT1().getOutput());
                     model.addAttribute("equity", tuple.getT2().getOutput());
                     model.addAttribute("detail", tuple.getT3().getOutput());

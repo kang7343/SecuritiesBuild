@@ -9,7 +9,7 @@
 ## 概要 
 
 ### 作業期間
-- 2024.09.02 ~ 2024.09.27 (3週間)
+- 2024.09.02 ~ 2024.09.27 (約3週間)
 
 ### プロジェクトの背景
 - 自分のような未経験者が、株式の知識に気軽に接するアプリケーションを作りたかった
@@ -21,14 +21,14 @@
 - 国内株式の情報を収集したい外国人
 
 ### システムの特徴
-- 金融機関のオープンAPIを用いた最新データとの連携
-- 証券SEという職務の特殊性を反映したUIデザイン
-
-### 機能一覧
-- 全国内上場会社のリアルタイムデータの推移照会（*20分遅れ）
-- 証券関連英単語の学習
-- 市場/33業種区分による銘柄の条件検索  
-- お気に入り銘柄のブックマークリスト管理
+- **全国内全国内上場会社のリアルタイムデータ推移**
+  - 金融機関のAPIを用いた最新データとの連携(※20分遅延) / 四本値の推移を把握しやすいグラフで表示
+- **フラッシュカード型の金融英単語学習**
+  - 日本語意味のみならず英英定義、例文を提供 / 全画面英語表示なので基礎単語も学習可能
+- **市場/業種区分による銘柄の条件検索**
+  - 東証のプライム、スタンダード、グロース、東京プロマーケット、リートの6市場及び33業種区分からスクリーニング可能
+- **お気に入り銘柄のブックマークリスト管理**
+  - スクリーナーからフィルタリングした銘柄をマイページブックマークに登録 / まとめて管理・検索可能
 
 ### 開発環境 <img src="https://img.shields.io/badge/Made%20for-VSCode-1f425f.svg">
 
@@ -55,7 +55,7 @@
   <img src="https://img.shields.io/badge/Thymeleaf-%23005C0F.svg?style=for-the-badge&logo=Thymeleaf&logoColor=white">
    <img src="https://img.shields.io/badge/MyBatis-000000?style=for-the-badge&logo=MyBatis&logoColor=white"> 
 
-#### Education
+#### Special thanks to
  <img src="https://img.shields.io/badge/ChatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white">
 </div>
 
@@ -95,29 +95,29 @@ util
  └─ rawData.json // Postmanで取得したJ-Quantsの初期データ。加工の対象
 ```
 
-model.js
+> model.js
 
 ![image](https://github.com/user-attachments/assets/7e72e194-6673-4a1d-b638-2d08df2ac132)
 
-insertData.js
+> insertData.js
 
 ![image](https://github.com/user-attachments/assets/d75b577d-3df6-42a2-b35e-e9c62a42e269)
 
-- powershellで実行してクエリが正常終了すると、console()のメッセージが表示される。
+- powershellで実行してクエリが正常終了すると、console()のメッセージが表示される
 - テーブルが存在しない場合、新規作成されるようにsequelize.sync({ force:false })メソッドを使用
   
   - { force:false }：テーブルが存在する場合、新規作成しない
   - { force:true }：既存のテーブルを削除し、新規作成
 
-テーブルが存在しない場合に実行
+> テーブルが存在しない場合に実行
 
 ![image](https://github.com/user-attachments/assets/7f3f03aa-e516-4ef8-80e4-d9cac3419b9c)
 
-テーブルが存在する場合に実行
+> テーブルが存在する場合に実行
 
 ![image](https://github.com/user-attachments/assets/ba42a1f0-311c-4649-8d51-c4b4241232b4)
 
-正常終了。selectで格納できたことを確認
+> 正常終了。selectで格納できたことを確認
 
 ![image](https://github.com/user-attachments/assets/d97a9510-46bf-4606-853c-ca3242014ed0)
 
@@ -295,6 +295,7 @@ src
          │   │   └─ register.html
          │   ├─ bookmarks.html
          │   ├─ equities-tse.html
+         │   ├─ error.html
          │   ├─ index.html
          │   ├─ indices.html
          │   ├─ main-adv.html
@@ -311,7 +312,8 @@ src
 
 <details>
 <summary>ワイヤーフレーム</summary>
-<br />
+  
+![image](https://github.com/user-attachments/assets/e200b19c-0059-44e5-924b-1216dd283ef8)
 
 </details>
 
@@ -323,7 +325,7 @@ src
 </details>
 
 <details>
-<summary>アーキテクチャ</summary>
+<summary>ユースケース図</summary>
 
 ![UseCase](https://github.com/user-attachments/assets/e32c099b-5129-421b-940a-0e53e3cea1e8)
 
@@ -339,30 +341,63 @@ src
   
 画面名|コントローラー|メソッド|ビュー
 ---|---|---|---
-[メイン（銘柄ランキング一覧）画面](http://localhost:8080/main)|MainController|menu|login/menu.html
-[ログイン画面](http://localhost:8080/user/login)|LoginController|login|user/login.html
-[ユーザーアカウント登録（入力）画面](http://localhost:8080/user/account/register)|UserController|register|user/register.html
-[ユーザーアカウント登録（確認）画面](http://localhost:8080/admin/account/confirm)|UserController|confirm|user/confirm.html
-[ユーザーアカウント登録（完了）画面](http://localhost:8080/admin/account/complete)|UserController|complete|user/complete.html
-[主要指数一覧画面](http://localhost:8080/indicies)|KisController|majorIndicies|indicies.html
-[銘柄詳細情報画面](http://localhost:8080//equities-tse/{id})|KisController|getCurrentPrice|equities-tse.html
-[英単語学習画面](http://localhost:8080/voca)|VocabularyController|getVocabularies|vocabulary.html
-[銘柄スクリーナー画面](http://localhost:8080/screener)|ScreenerController|stockScreener|screener.html
-[ブックマーク一覧画面](http://localhost:8080/mypage)|BookmarkController|getBookmarks|bookmarks.html
-[エラー画面](http://localhost:8080/error)|ErrorController|error|error.html
+[メイン（銘柄ランキング一覧）画面](http://localhost:8080/main)|MainController|`menu`|login/menu.html
+[ログイン画面](http://localhost:8080/user/login)|LoginController|`login`|user/login.html
+[ユーザーアカウント登録（入力）画面](http://localhost:8080/user/account/register)|UserController|`register`|user/register.html
+[ユーザーアカウント登録（確認）画面](http://localhost:8080/admin/account/confirm)|UserController|`confirm`|user/confirm.html
+[ユーザーアカウント登録（完了）画面](http://localhost:8080/admin/account/complete)|UserController|`complete`|user/complete.html
+[主要指数一覧画面](http://localhost:8080/indicies)|KisController|`majorIndicies`|indicies.html
+[銘柄詳細情報画面](http://localhost:8080//equities-tse/{id})|KisController|`getCurrentPrice`|equities-tse.html
+[英単語学習画面](http://localhost:8080/voca)|VocabularyController|`getVocabularies`|vocabulary.html
+[銘柄スクリーナー画面](http://localhost:8080/screener)|ScreenerController|`stockScreener`|screener.html
+[ブックマーク一覧画面](http://localhost:8080/mypage)|BookmarkController|`getBookmarks`|bookmarks.html
+[エラー画面](http://localhost:8080/error)|-|-|error.html
 </details>
 
 <details>
 <summary>デモンストレーション</summary>
 <br />
-  
-1. ログイン
-2. アカウント登録
-3. 株式ランキング一覧
-4. 主要指数照会
-5. 用語学習
-6. 銘柄スクリーニング
-7. ブックマーク
-8. 銘柄詳細照会
+
+**0. インデックス**
+
+![image](https://github.com/user-attachments/assets/90b78f29-d4ba-4772-b10a-0cd9babbd3d4)
+
+**1. 銘柄詳細照会**
+
+![image](https://github.com/user-attachments/assets/2b41261c-539f-4151-941f-86386ed62372)
+
+**2. ログイン**
+
+![image](https://github.com/user-attachments/assets/7a58be47-11ed-4bdb-a6b1-5e57c97ad22d)
+   
+**3. アカウント登録**
+
+![image](https://github.com/user-attachments/assets/48f1097d-de6b-4f08-b3e0-f6a71e0568a3)
+
+**4. 株式ランキング一覧**
+  - ゲストモード：売買高順のみ閲覧可能
+    
+![image](https://github.com/user-attachments/assets/e045ca28-c2ba-4dd5-9d07-14ac4206d669)
+
+  - ログイン後：売買代金、現在株価、値上がり順も閲覧可能
+    
+![image](https://github.com/user-attachments/assets/391ab652-8e85-4b3e-b3f1-d5687cde0eb1)
+
+ 
+**5. 主要指数照会**
+
+![image](https://github.com/user-attachments/assets/7b6e8509-f5da-46a9-8548-47c7fa75d5a0)
+   
+**6. 金融英単語学習**
+
+![image](https://github.com/user-attachments/assets/22d94a80-bf37-45ec-a56c-54207950a0df)
+    
+**7. 銘柄スクリーニング**
+
+![image](https://github.com/user-attachments/assets/8607d3dc-a4f1-4616-8530-1dd628355bb5)
+    
+**8. ブックマーク**
+
+![image](https://github.com/user-attachments/assets/e2a2ca2b-e389-4afd-850d-7986bf76e01e)
 
 </details>

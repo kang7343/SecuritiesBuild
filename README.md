@@ -77,7 +77,7 @@
 - https://jpx.gitbook.io/j-quants-ja/api-reference/listed_info
 - 2024.06.18 時点で上場している銘柄の一覧をPostmanを利用してjsonファイルで取得
   
-![image](https://github.com/user-attachments/assets/cc0c1a02-a358-4267-af90-5679ab631c32?raw-true)
+![image](https://github.com/user-attachments/assets/cc0c1a02-a358-4267-af90-5679ab631c32)
 
 ### データの格納
 - 取得したjsonファイルからnode.jsとsequelizeを利用して必要なデータのみを抽出し、ローカルDB(stock)に保存
@@ -362,7 +362,7 @@ src
 
 **0. インデックス**
 
-![image](https://github.com/user-attachments/assets/90b78f29-d4ba-4772-b10a-0cd9babbd3d4)
+<img src="https://github.com/user-attachments/assets/90b78f29-d4ba-4772-b10a-0cd9babbd3d4">
 
 **1. 銘柄詳細照会**
 
